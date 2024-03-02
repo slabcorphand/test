@@ -1,0 +1,2 @@
+画图板 win+r 搜mspaint
+截图 win+shift+s
