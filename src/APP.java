@@ -216,6 +216,7 @@ public class APP {
     }
 
     private static String createCode() {
+        int a=0;
         return null;
     }
 
