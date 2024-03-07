@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch-2.1.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <!-- Spring Batch configurations -->
+
+    <bean id="jobLauncher"
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository" />
+    </bean>
+
+    <bean id="jobRepository"
+          class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+        <property name="validateTransactionState" value="false" />
+
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
+
+    <task:scheduler id="dashboardBatchScheduler" pool-size="10" />
+    <task:scheduled-tasks scheduler="dashboardBatchScheduler">
+        <task:scheduled ref="DashboardBatch" method="dashboardStep" cron="0 */5 * * * *" />
+    </task:scheduled-tasks>
+
+    <bean id="DashboardBatch" class="jp.co.vermore.batch.DashboardBatch"></bean>
+
+    <bean id="DashboardService" class="jp.co.vermore.service.DashboardService"></bean>
+</beans>

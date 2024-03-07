@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jp.co.vermore.mapper.DashboardMapper" >
+
+    <select id="getCoinDataIn" resultType="jp.co.vermore.form.admin.DashboardCoinDataForm">
+        select
+            substring(create_datetime, 1, 7) as month_year,
+            count(1) as coin_amount
+        from
+            coin_history
+        where
+            del_flg = 0
+            and substring(create_datetime, 1, 7) in
+
+        <foreach collection="list" item="time" separator="," open="(" close=")">
+            #{time}
+        </foreach>
+        group by
+            substring(create_datetime, 1, 7)
+    </select>
+
+    <insert id="insertList" parameterType="jp.co.vermore.form.admin.DashboardCoinDataForm">
+        insert into dashboard_coin_count
+        (
+        id,
+        month_year,
+        coin_amount,
+        create_datetime,
+        update_datetime,
+        del_flg,
+        note
+        )
+        values
+        <foreach collection="list" item="item" index= "index" separator =",">
+            (
+            #{item.id},
+            #{item.monthYear},
+            #{item.coinAmount},
+            #{item.createDatetime},
+            #{item.updateDatetime},
+            #{item.delFlg},
+            #{item.note}
+            )
+        </foreach>
+
+    </insert>
+
+    <delete id="deleteOldData">
+        delete from dashboard_coin_count
+        where
+            del_flg = 0 and
+            create_datetime <![CDATA[ <= ]]> #{endDateTime}
+    </delete>
+
+    <select id="getNearlySix" resultType="jp.co.vermore.entity.DashboardCoinCount">
+        select
+            *
+        from
+            dashboard_coin_count
+        order by
+            create_datetime desc , month_year
+            limit 6
+    </select>
+</mapper>
